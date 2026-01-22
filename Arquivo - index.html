@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Carteira Base: VIP Access</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Poppins:wght@400;700;800&display=swap');
+
+        body {
+            margin: 0; padding: 0;
+            background-color: #1a1a1a;
+            font-family: 'Poppins', sans-serif;
+            overflow: hidden;
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        #main-wrapper {
+            position: relative; width: 100%; height: 100vh;
+            max-width: 600px; margin: 0 auto;
+            background: #000; overflow: hidden;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+        }
+
+        /* --- TELA DE LOGIN (CADEADO) --- */
+        #login-gate {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #1e3799, #0c2461);
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            z-index: 100; padding: 20px; box-sizing: border-box; text-align: center;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px 20px; border-radius: 20px;
+            width: 100%; max-width: 320px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 4px solid #f1c40f;
+            position: relative;
+        }
+
+        .vip-badge {
+            background: #f1c40f; color: #2c3e50;
+            padding: 5px 10px; border-radius: 5px;
+            font-size: 10px; font-weight: bold;
+            display: inline-block; margin-bottom: 10px;
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        /* Botão de Compra MERCADO PAGO */
+        .btn-buy {
+            background: #009ee3; /* Azul Mercado Pago */
+            color: white; border: none; padding: 18px 20px;
+            font-size: 16px; font-weight: 800; border-radius: 50px; cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 158, 227, 0.4);
+            width: 100%; text-transform: uppercase;
+            animation: pulse 2s infinite; text-decoration: none; display: flex;
+            align-items: center; justify-content: center; gap: 10px;
+            box-sizing: border-box; margin-bottom: 15px;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+
+        .divider {
+            border-top: 1px solid #bdc3c7; margin: 25px 0 15px 0; position: relative;
+        }
+        .divider span {
+            background: #fff; padding: 0 10px; color: #7f8c8d; font-size: 11px;
+            position: relative; top: -8px; text-transform: uppercase; font-weight: bold;
+        }
+
+        input[type="text"] {
+            width: 80%; padding: 12px; margin-bottom: 10px;
+            border: 2px solid #bdc3c7; border-radius: 10px;
+            font-size: 16px; text-align: center;
+            text-transform: uppercase; letter-spacing: 2px;
+            font-family: 'Poppins', sans-serif; font-weight: bold;
+        }
+        input[type="text"]:focus { outline: none; border-color: #27ae60; }
+
+        .btn-unlock {
+            background: #2c3e50; color: white; border: none; padding: 12px 30px;
+            font-size: 14px; font-weight: 800; border-radius: 50px; cursor: pointer;
+            width: 100%; text-transform: uppercase;
+        }
+
+        .error-msg { color: #c0392b; font-size: 12px; font-weight: bold; margin-top: 10px; display: none; }
+
+        /* --- JOGO --- */
+        #game-interface {
+            display: none; width: 100%; height: 100%; position: relative;
+            background-color: #87CEEB; transition: background-color 0.5s linear;
+        }
+        /* (CSS do jogo preservado) */
+        .sky-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+        #clouds { background-image: url('data:image/svg+xml;utf8,<svg width="100" height="50" xmlns="http://www.w3.org/2000/svg"><path d="M10,40 Q25,25 40,40 T70,40 T90,40" fill="none" stroke="white" stroke-width="3" opacity="0.5"/></svg>'); background-size: 200px 100px; opacity: 1; animation: cloudMove 20s linear infinite; }
+        #stars { background-image: radial-gradient(white 1px, transparent 1px); background-size: 50px 50px; opacity: 0; transition: opacity 2s ease; }
+        #the-moon { position: absolute; top: 10%; right: 10%; width: 100px; height: 100px; background: #f1c40f; border-radius: 50%; box-shadow: 0 0 50px #f1c40f; opacity: 0; transform: translateY(-50px); transition: opacity 3s ease, transform 3s ease; }
+        @keyframes cloudMove { from { background-position: 0 0; } to { background-position: 0 500px; } }
+        #ui-layer { position: absolute; top: 0; left: 0; width: 100%; padding: 15px; box-sizing: border-box; display: flex; justify-content: space-between; align-items: flex-start; z-index: 30; pointer-events: none; }
+        .score-card { background: rgba(255, 255, 255, 0.9); padding: 10px 15px; border-radius: 12px; border: 2px solid #2c3e50; display: flex; flex-direction: column; }
+        .label { font-size: 10px; font-weight: bold; color: #7f8c8d; text-transform: uppercase; }
+        .value { font-size: 18px; font-weight: 800; color: #2c3e50; font-family: 'Press Start 2P', cursive; }
+        .record-display { font-size: 10px; color: #f39c12; font-weight: bold; margin-top: 2px; }
+        #mute-btn { pointer-events: auto; background: #f1c40f; border: 2px solid #2c3e50; width: 40px; height: 40px; border-radius: 50%; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 0 #c94e08; }
+        #moon-progress-container { position: absolute; left: 15px; top: 80px; width: 10px; height: 150px; background: rgba(0,0,0,0.3); border-radius: 5px; overflow: hidden; border: 1px solid rgba(255,255,255,0.5); }
+        #moon-progress-bar { width: 100%; height: 0%; background: linear-gradient(to top, #27ae60, #f1c40f); position: absolute; bottom: 0; transition: height 0.2s; }
+        #player { position: absolute; bottom: 40px; left: 50%; font-size: 55px; z-index: 20; filter: drop-shadow(0 10px 10px rgba(0,0,0,0.3)); }
+        .bubble { position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%); background: #fff; color: #000; padding: 5px 10px; border-radius: 10px; font-size: 11px; font-weight: bold; white-space: nowrap; border: 2px solid #000; opacity: 0; transition: opacity 0.2s; pointer-events: none; z-index: 21; }
+        .bubble.show { opacity: 1; }
+        .item { position: absolute; font-size: 38px; z-index: 10; }
+        .modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 50; backdrop-filter: blur(8px); text-align: center; }
+        .card { background: #fff; padding: 30px; border-radius: 20px; width: 80%; max-width: 350px; border: 4px solid #2c3e50; box-shadow: 10px 10px 0 #f1c40f; }
+        .btn-action { background: #27ae60; color: white; border: 3px solid #2c3e50; padding: 18px 40px; font-size: 18px; font-weight: 800; border-radius: 50px; margin-top: 20px; cursor: pointer; width: 100%; box-shadow: 0 5px 0 #145a32; font-family: 'Poppins', sans-serif; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+
+    <div id="main-wrapper">
+        
+        <div id="login-gate">
+            <div class="login-card">
+                <div class="vip-badge">ACESSO EXCLUSIVO</div>
+                <h2 style="margin: 10px 0; color: #2c3e50;">CARTEIRA BASE</h2>
+                
+                <a id="buy-link" href="#" target="_blank" class="btn-buy">
+                    💳 COMPRAR ACESSO
+                </a>
+                
+                <p style="font-size: 11px; color: #7f8c8d; margin-bottom: 5px;">
+                    Após o pagamento, você receberá seu código.
+                </p>
+
+                <div class="divider"><span>JÁ TENHO O CÓDIGO</span></div>
+                
+                <input type="text" id="access-code" placeholder="DIGITE O CÓDIGO">
+                <button class="btn-unlock" onclick="checkAccess()">LIBERAR JOGO</button>
+                <div id="error-msg" class="error-msg">🚫 Código Inválido</div>
+            </div>
+        </div>
+
+        <div id="game-interface">
+            <div id="stars" class="sky-layer"></div>
+            <div id="the-moon"></div>
+            <div id="clouds" class="sky-layer"></div>
+
+            <div id="ui-layer">
+                <div class="score-card">
+                    <span class="label">Patrimônio</span>
+                    <span class="value">R$ <span id="score">0</span></span>
+                    <div class="record-display">🏆 Recorde: R$ <span id="highscore">0</span></div>
+                </div>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <div id="lives" style="font-size: 22px;">❤️❤️❤️</div>
+                    <button id="mute-btn" onclick="toggleMute()">🔊</button>
+                </div>
+            </div>
+
+            <div id="moon-progress-container"><div id="moon-progress-bar"></div></div>
+            <div id="player">🦸‍♂️<div class="bubble" id="bubble">To The Moon!</div></div>
+
+            <div id="start-screen" class="modal">
+                <div class="card">
+                    <h1 style="color: #2c3e50; font-family:'Press Start 2P'; font-size: 22px; line-height: 1.5;">CARTEIRA<br><span style="color:#f1c40f">BASE</span></h1>
+                    <p style="font-size: 12px; font-weight: bold; color: #7f8c8d; margin-top: 10px;">MISSÃO: CHEGAR NA LUA</p>
+                    <button class="btn-action" id="btn-start">DECOLAR 🚀</button>
+                </div>
+            </div>
+
+            <div id="game-over-screen" class="modal" style="display: none;">
+                <div class="card">
+                    <h2 style="color: #c0392b; font-family:'Press Start 2P'; font-size: 18px;">FALÊNCIA!</h2>
+                    <div style="background:#f0f0f0; padding:10px; border-radius:10px; margin: 15px 0; font-weight:bold; color:#2c3e50;">
+                        Final: R$ <span id="final-score">0</span>
+                    </div>
+                    <button class="btn-action" onclick="resetGame()">TENTAR DE NOVO</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // 🛠️ ÁREA DE CONFIGURAÇÃO DO LINK
+        // ============================================
+        
+        // SEU LINK DO MERCADO PAGO
+        const CHECKOUT_LINK = "https://mpago.la/2a8Drnz"; 
+
+        // ============================================
+
+        // Aplica o link no botão
+        document.getElementById('buy-link').href = CHECKOUT_LINK;
+
+        // LISTA DE CÓDIGOS QUE VOCÊ VAI ENTREGAR MANUALMENTE
+        // Quando alguém pagar, você escolhe um desses e envia.
+        const ALLOWED_CODES = [
+            "CB-VIP-01", "CB-VIP-02", "CB-VIP-03", "CB-VIP-04", "CB-VIP-05",
+            "CB-VIP-ALPHA", "CB-VIP-BETA", "CB-VIP-GAMMA", "CB-VIP-DELTA",
+            "CB-MOON-X99", "CB-MOON-Y88", "CB-MOON-Z77", "CB-PRO-2026",
+            "CB-PRO-RICH", "CB-GOLD-KEY", "CB-ACCESS-01", "CB-ACCESS-02",
+            "CB-ACCESS-03", "CB-ACCESS-04", "CB-ACCESS-05"
+        ];
+
+        // Verifica acesso salvo
+        const savedAccess = localStorage.getItem('cb_vip_access');
+        if (savedAccess === 'granted') unlockGame();
+
+        function checkAccess() {
+            const input = document.getElementById('access-code');
+            const errorMsg = document.getElementById('error-msg');
+            const code = input.value.toUpperCase().trim();
+
+            if (ALLOWED_CODES.includes(code)) {
+                localStorage.setItem('cb_vip_access', 'granted');
+                unlockGame();
+            } else {
+                errorMsg.style.display = 'block';
+                input.style.borderColor = '#c0392b';
+                input.classList.add('shake');
+                setTimeout(() => input.classList.remove('shake'), 500);
+            }
+        }
+
+        function unlockGame() {
+            document.getElementById('login-gate').style.display = 'none';
+            document.getElementById('game-interface').style.display = 'block';
+        }
+
+        // --- ENGINE DO JOGO ---
+        const MOON_GOAL = 2000; const LERP_FACTOR = 0.08; 
+        const container = document.getElementById('game-interface'); 
+        const player = document.getElementById('player');
+        const scoreEl = document.getElementById('score');
+        const highscoreEl = document.getElementById('highscore');
+        const livesEl = document.getElementById('lives');
+        const clouds = document.getElementById('clouds');
+        const stars = document.getElementById('stars');
+        const moon = document.getElementById('the-moon');
+        const progressBar = document.getElementById('moon-progress-bar');
+        const bubble = document.getElementById('bubble');
+
+        let game = { running: false, score: 0, lives: 3, speed: 1, highscore: localStorage.getItem('cb_moon_record') || 0 };
+        let pos = { current: 50, target: 50 };
+        const items = [];
+        const itemTypes = [
+            { type: 'good', emoji: '💰', val: 50, msgs: ['Dividendos!', 'Pingou!', 'Lucro!'] },
+            { type: 'good', emoji: '💎', val: 150, msgs: ['Lua!', 'Hold!', 'Yield!'] },
+            { type: 'good', emoji: '📈', val: 100, msgs: ['Alta!', 'Bull Market!', 'B3!'] },
+            { type: 'bad', emoji: '💸', val: -1, msgs: ['Boleto!', 'Imposto!', 'Taxa!'] },
+            { type: 'bad', emoji: '👺', val: -1, msgs: ['Chefe!', 'Crise!', 'Loss!'] },
+            { type: 'bad', emoji: '📉', val: -1, msgs: ['Bear Market!', 'Vendi Fundo!', 'Pânico!'] }
+        ];
+
+        highscoreEl.innerText = game.highscore;
+        
+        let audioCtx = null; let isMuted = false; let musicTimer = null; let noteIdx = 0;
+        const btnStart = document.getElementById('btn-start');
+        btnStart.addEventListener('touchstart', (e) => { e.preventDefault(); startGame(); });
+        btnStart.addEventListener('click', (e) => { e.preventDefault(); startGame(); });
+
+        function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === 'suspended') audioCtx.resume(); }
+        function playTone(freq, type, dur) { if (isMuted || !audioCtx) return; const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = type; osc.frequency.value = freq; gain.gain.setValueAtTime(0.1, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + dur); osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + dur); }
+        function startMusic() { if (musicTimer) clearInterval(musicTimer); const melody = [523,0,659,0,783,0,1046,0, 523,659,783,1046, 880,0,698,0,587,0,523,0]; noteIdx = 0; musicTimer = setInterval(() => { if (!game.running || isMuted) return; const f = melody[noteIdx % melody.length]; if (f > 0) playTone(f, 'square', 0.1); if (noteIdx % 4 === 0) playTone(150, 'triangle', 0.1); noteIdx++; }, 120); }
+        function toggleMute() { isMuted = !isMuted; document.getElementById('mute-btn').innerText = isMuted ? "🔇" : "🔊"; }
+
+        function startGame() { if (game.running) return; initAudio(); startMusic(); game.running = true; game.score = 0; game.lives = 3; game.speed = 1; pos.current = 50; pos.target = 50; items.length = 0; document.querySelectorAll('.item').forEach(i => i.remove()); container.style.backgroundColor = "#87CEEB"; clouds.style.opacity = 1; stars.style.opacity = 0; moon.style.opacity = 0; moon.style.transform = "translateY(-50px)"; document.getElementById('start-screen').style.display = 'none'; document.getElementById('game-over-screen').style.display = 'none'; updateHUD(); requestAnimationFrame(gameLoop); spawnLoop(); }
+        function spawnLoop() { if (!game.running) return; spawnItem(); let nextSpawn = 1000 / (1 + (game.speed * 0.5)); setTimeout(spawnLoop, nextSpawn); }
+        function gameLoop() { if (!game.running) return; pos.current += (pos.target - pos.current) * LERP_FACTOR; const tilt = (pos.target - pos.current) * -0.8; player.style.left = pos.current + '%'; player.style.transform = `translateX(-50%) rotate(${tilt}deg)`; const playerRect = player.getBoundingClientRect(); const hitX = playerRect.left + 20; const hitW = playerRect.width - 40; const hitY = playerRect.top + 20; const hitH = playerRect.height - 30; for (let i = items.length - 1; i >= 0; i--) { let item = items[i]; item.y += (4 * game.speed); item.el.style.top = item.y + 'px'; const iRect = item.el.getBoundingClientRect(); if (hitX < iRect.right && hitX + hitW > iRect.left && hitY < iRect.bottom && hitY + hitH > iRect.top) { handleCollision(item, i); continue; } if (item.y > window.innerHeight) { item.el.remove(); items.splice(i, 1); } } updateEnvironment(); game.speed += 0.0005; requestAnimationFrame(gameLoop); }
+        function updateEnvironment() { let progress = Math.min(game.score / MOON_GOAL, 1); progressBar.style.height = (progress * 100) + '%'; let r, g, b; if (progress < 0.5) { let p = progress * 2; r = 135 - (110 * p); g = 206 - (181 * p); b = 235 - (123 * p); } else { let p = (progress - 0.5) * 2; r = 25 - (25 * p); g = 25 - (25 * p); b = 112 - (112 * p); } container.style.backgroundColor = `rgb(${r},${g},${b})`; if (progress > 0.3) clouds.style.opacity = 1 - ((progress - 0.3) * 2); if (progress > 0.5) stars.style.opacity = (progress - 0.5) * 2; if (progress >= 1) { moon.style.opacity = 1; moon.style.transform = "translateY(0)"; } }
+        function updateInput(clientX) { if (!game.running) return; const rect = container.getBoundingClientRect(); let xPct = ((clientX - rect.left) / rect.width) * 100; if (xPct < 5) xPct = 5; if (xPct > 95) xPct = 95; pos.target = xPct; }
+        const wrapper = document.getElementById('main-wrapper'); wrapper.addEventListener('mousemove', (e) => updateInput(e.clientX)); wrapper.addEventListener('touchmove', (e) => { e.preventDefault(); updateInput(e.touches[0].clientX); }, { passive: false }); wrapper.addEventListener('touchstart', (e) => { if(game.running) { e.preventDefault(); updateInput(e.touches[0].clientX); } }, { passive: false });
+        function spawnItem() { const type = itemTypes[Math.floor(Math.random() * itemTypes.length)]; const el = document.createElement('div'); el.className = 'item'; el.innerText = type.emoji; const x = Math.random() * 90 + 5; el.style.left = x + '%'; el.style.top = '-50px'; container.appendChild(el); items.push({ el: el, y: -50, data: type }); }
+        function handleCollision(item, idx) { item.el.remove(); items.splice(idx, 1); const msg = item.data.msgs[Math.floor(Math.random() * item.data.msgs.length)]; if (item.data.val > 0) { game.score += item.data.val; playTone(1200, 'sine', 0.1); showBubble(msg); } else { game.lives--; playTone(150, 'sawtooth', 0.2); showBubble(msg); container.style.transform = "translateX(5px)"; setTimeout(() => container.style.transform = "none", 50); if (game.lives <= 0) endGame(); } updateHUD(); }
+        function showBubble(txt) { bubble.innerText = txt; bubble.classList.add('show'); setTimeout(() => bubble.classList.remove('show'), 800); }
+        function updateHUD() { scoreEl.innerText = Math.floor(game.score); let h = ""; for(let i=0; i<game.lives; i++) h+="❤️"; livesEl.innerText = h; }
+        function endGame() { game.running = false; clearInterval(musicTimer); if (game.score > game.highscore) { game.highscore = game.score; localStorage.setItem('cb_moon_record', game.highscore); highscoreEl.innerText = Math.floor(game.highscore); } document.getElementById('final-score').innerText = Math.floor(game.score); document.getElementById('game-over-screen').style.display = 'flex'; }
+        function resetGame() { startGame(); }
+    </script>
+</body>
+</html>
